@@ -1,0 +1,1 @@
+    Test program for understand how to work JMS and Active MQ
