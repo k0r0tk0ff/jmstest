@@ -5,19 +5,24 @@ import org.apache.activemq.broker.BrokerService;
 public class Main {
 
     public static void main(String[]args){
-       // Sender sender = new Sender();
-       // Receiver receiver = new Receiver();
-        EmbeddedActiveMqServer activeMqServer = new EmbeddedActiveMqServer();
+        Sender sender = new Sender();
+        Receiver receiver = new Receiver();
+
         BrokerService brokerService = new BrokerService();
+        try {
+            brokerService.setPersistent(false);
+            brokerService.setUseJmx(false);
+            brokerService.addConnector("tcp://localhost:61616");
 
-        activeMqServer.startActiveMqServer(brokerService);
+            brokerService.start();
+            sender.sendMessage();
+            receiver.receiveMessage();
 
-      //  sender.sendMessage();
+            brokerService.stop();
 
-      //  receiver.receiveMessage();
-
-        activeMqServer.startActiveMqServer(brokerService);
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

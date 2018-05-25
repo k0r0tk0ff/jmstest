@@ -7,7 +7,6 @@ import javax.jms.*;
 
 
 public class Sender {
-
     public void sendMessage() {
 
         ConnectionFactory f = new ActiveMQConnectionFactory(
@@ -32,10 +31,5 @@ public class Sender {
         } catch (JMSException e) {
             e.printStackTrace();
         }
-
-
-
     }
-
-
 }
