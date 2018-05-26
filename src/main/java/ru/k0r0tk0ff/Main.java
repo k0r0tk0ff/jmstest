@@ -40,16 +40,7 @@ public class Main {
             
             sender.sendMessage();
 
-/*
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("Success send message ........");
-            }
-*/
-
             receiver.receiveMessage();
-/*            if(LOG.isDebugEnabled()) {
-                LOG.debug("Success receive message ........");
-            }*/
 
             brokerService.stop();
 
