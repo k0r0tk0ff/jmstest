@@ -10,21 +10,23 @@ public class Receiver {
 
     private static final Logger LOG  = LoggerFactory.getLogger(Receiver.class);
 
-    public void receiveMessage() {
+    private String queueName;
+
+    public Receiver(String queueName) {
+        this.queueName = queueName;
+    }
+
+    public void receiveMessage(int mode, boolean isTransacted, String url) {
 
         Connection connection = null;
         Session session = null;
-
-        //Name of queue
-        String queueName = "queue";
-
-        ConnectionFactory collectionFactory = new ActiveMQConnectionFactory();
+        ConnectionFactory collectionFactory = new ActiveMQConnectionFactory(url);
 
         try {
             connection = collectionFactory.createConnection();
             connection.start();
 
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            session = connection.createSession(isTransacted, mode);
             Destination destination = session.createQueue(queueName);
 
             MessageConsumer consumer = session.createConsumer(destination);
@@ -33,13 +35,12 @@ public class Receiver {
 
             if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
-
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("........................Success received message. Message contains that - '" +
-                            textMessage.getText() + "'");
-                }
+            LOG.info("Success received message. Message contains that - '" +
+            textMessage.getText() + "'");
             }
 
+            message.acknowledge();
+            session.close();
             connection.close();
 
         } catch (JMSException e) {
