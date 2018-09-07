@@ -12,19 +12,23 @@ public class Sender {
 
     private static final Logger LOG  = LoggerFactory.getLogger(Sender.class);
 
-    public void sendMessage() {
+    private String queueName;
 
-        //Name of queue
-        String queueName = "queue";
+    public Sender(String queueName) {
+        this.queueName = queueName;
+    }
+
+    public void sendMessage(int mode, boolean isTransacted, String url) {
 
         ConnectionFactory f = new ActiveMQConnectionFactory(
                 ActiveMQConnection.DEFAULT_USER,
                 ActiveMQConnection.DEFAULT_PASSWORD,
-                "failover://tcp://localhost:61616");
+          //      "failover://tcp://localhost:61616");
+                url);
 
         try {
             Connection connection = f.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Session session = connection.createSession(isTransacted, mode);
             Destination destination = session.createQueue(queueName);
 
             MessageProducer producer = session.createProducer(destination);
@@ -33,16 +37,12 @@ public class Sender {
 
             producer.send(message);
 
-            if(LOG.isDebugEnabled()) {
-                LOG.debug(".............................Message has been sent success. Message contains that - '" +
-                        message.getText() + "'");
-            }
+            LOG.info("Message has been sent success. Message contains that - '" +
+            message.getText() + "'");
 
+            //session.commit();
+            session.close();
             connection.close();
-
-            // for debug intercept and log exception
-            //throw new JMSException(" Exception Message ");
-
         } catch (JMSException e) {
             LOG.error(".......................................................................");
             LOG.error(e.toString());
