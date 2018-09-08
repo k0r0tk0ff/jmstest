@@ -6,17 +6,28 @@ import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 
-public class Receiver {
+public class Receiver extends Thread {
 
     private static final Logger LOG  = LoggerFactory.getLogger(Receiver.class);
 
     private String queueName;
+    private int mode;
+    private boolean isTransacted;
+    private String url;
 
-    public Receiver(String queueName) {
+    public Receiver(String queueName, int mode, boolean isTransacted, String url) {
         this.queueName = queueName;
+        this.mode = mode;
+        this.isTransacted = isTransacted;
+        this.url = url;
     }
 
-    public void receiveMessage(int mode, boolean isTransacted, String url) {
+    public void run() {
+        //System.out.println("Receiver -- " + Thread.currentThread().toString());
+        receiveMessage(mode, isTransacted, url);
+    }
+
+    void receiveMessage(int mode, boolean isTransacted, String url) {
 
         Connection connection = null;
         Session session = null;
@@ -39,16 +50,13 @@ public class Receiver {
             textMessage.getText() + "'");
             }
 
-            message.acknowledge();
+            //message.acknowledge();
             session.close();
             connection.close();
-
         } catch (JMSException e) {
             LOG.error(".......................................................................");
             LOG.error(e.toString());
             LOG.error(".......................................................................");
         }
-
     }
-
 }

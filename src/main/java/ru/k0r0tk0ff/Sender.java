@@ -7,15 +7,25 @@ import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 
-
-public class Sender {
+public class Sender extends Thread {
 
     private static final Logger LOG  = LoggerFactory.getLogger(Sender.class);
 
     private String queueName;
+    private int mode;
+    private boolean isTransacted;
+    private String url;
 
-    public Sender(String queueName) {
+    public Sender(String queueName, int mode, boolean isTransacted, String url) {
         this.queueName = queueName;
+        this.mode = mode;
+        this.isTransacted = isTransacted;
+        this.url = url;
+    }
+
+    public void run() {
+        //System.out.println("Sender -- " + Thread.currentThread().toString());
+        sendMessage(mode, isTransacted, url);
     }
 
     public void sendMessage(int mode, boolean isTransacted, String url) {
